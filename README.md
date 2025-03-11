@@ -1,66 +1,42 @@
-## Foundry
+# Sei Liquid Staking
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+-   [x] Find out how to access auto generated account of Sei local node
+-   [ ] Integrate hardhat with our foundry project
+-   [ ] Write test that and try to run it on the local node
 
-Foundry consists of:
+## Notes
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Some of the following commands won't work unless the local node is running so make sure you have the local node running in the background.
 
-## Documentation
+Run local chain:
 
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+cd ~/sei-chain # PATH may vary in your development environment
+./scripts/initialize_local_chain.sh
 ```
 
-### Test
+Get list of accounts:
 
-```shell
-$ forge test
+```bash
+~/go/bin/seid keys list
 ```
 
-### Format
+Get details of single account by account name (name in order and starts from ta0 and goes upto ta9)
 
-```shell
-$ forge fmt
+```bash
+> ~/go/bin/seid keys show ta9
+- name: ta9
+  type: local
+  address: sei1m5x785z6r2j9fduhl8sv252usxlcf6q4hhk028
+  evm_address: 0x72906E861d2D753e4CCF0034024ba5e0878066dC
+  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"A8dDLApUKWMpBIMqBeC4hgpq74Ttc2ZH/cd13oOKZ+Rf"}'
+  mnemonic: ""
 ```
 
-### Gas Snapshots
+Check balance of the account using Sei (Cosmos) Address:
 
-```shell
-$ forge snapshot
+```bash
+~/go/bin/seid query bank balances sei1m5x785z6r2j9fduhl8sv252usxlcf6q4hhk028
 ```
 
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Note that when we initialize local node with `initialize_local_chain.sh` script it regenerates all the accounts so if you're using privaate from previous session then there is a chance that the account is not one of 10 which got initial balance on local node. In short whenever you start the local node you have to update the private key of account that is being used for testing.
