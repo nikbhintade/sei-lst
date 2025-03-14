@@ -1,8 +1,9 @@
 # Sei Liquid Staking
 
 -   [x] Find out how to access auto generated account of Sei local node
--   [ ] Integrate hardhat with our foundry project
--   [ ] Write test that and try to run it on the local node
+-   [x] Integrate hardhat with our foundry project
+-   [x] Write test that and try to run it on the local Sei node
+-   [ ] Find out why hardhat test doesn't set correct owner (MAJOR BLOCKER - becuase of this all the tests that I wanted to run on local Sei node are not running properly)
 
 ## Notes
 
@@ -31,6 +32,14 @@ Get details of single account by account name (name in order and starts from ta0
   evm_address: 0x72906E861d2D753e4CCF0034024ba5e0878066dC
   pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"A8dDLApUKWMpBIMqBeC4hgpq74Ttc2ZH/cd13oOKZ+Rf"}'
   mnemonic: ""
+```
+
+Export private key of the account
+
+```
+~/go/bin/seid keys export ta9 --unsafe --unarmored-hex
+WARNING: The private key will be exported as an unarmored hexadecimal string. USE AT YOUR OWN RISK. Continue? [y/N]: y
+<PRIVATE_KEY_WILL_BE_LOGGED_HERE_WITHOUT_THE_0x_PART_INFRONT_OF_IT>
 ```
 
 Check balance of the account using Sei (Cosmos) Address:

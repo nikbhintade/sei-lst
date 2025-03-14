@@ -7,9 +7,9 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 
 contract StakedSei is ERC20Burnable, Ownable2Step {
-    constructor(address liquidStakingContract, string memory name, string memory symbol)
+    constructor( /*address liquidStakingContract,*/ string memory name, string memory symbol)
         ERC20(name, symbol)
-        Ownable(liquidStakingContract)
+        Ownable(msg.sender)
     {}
 
     // mint
