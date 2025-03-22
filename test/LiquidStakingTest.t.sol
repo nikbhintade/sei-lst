@@ -17,13 +17,11 @@ contract LiquidStakingTest is Test {
 
     function setUp() public {
         s_owner = makeAddr("s_owner");
-
-        address tempTokenOwner = makeAddr("tempTokenOwner");
-        s_stakedSei = new StakedSei(tempTokenOwner, "StakedSei", "SSEI");
+        
+        s_stakedSei = new StakedSei("StakedSei", "SSEI");
 
         s_liquidStaking = new LiquidStaking(address(s_stakedSei), s_owner);
 
-        vm.prank(tempTokenOwner);
         s_stakedSei.transferOwnership(address(s_liquidStaking));
 
         vm.prank(s_owner);

@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/recyclebin/solidity/sei-lst/src/LiquidStaking.sol": {
-      "lastModificationDate": 1741623568907,
-      "contentHash": "705bb68280581bbdd36db67979fd2dc6",
+      "lastModificationDate": 1741970267237,
+      "contentHash": "99bbdb7d6b8ba4cdc37264d387255b5a",
       "sourceName": "src/LiquidStaking.sol",
       "solcConfig": {
         "version": "0.8.21",
@@ -32,6 +32,7 @@
       "imports": [
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/access/Ownable2Step.sol",
+        "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol",
         "src/interfaces/precompiles/IDistr.sol",
         "src/interfaces/precompiles/IStaking.sol",
         "src/StakedSei.sol"
@@ -116,8 +117,8 @@
       ]
     },
     "/home/recyclebin/solidity/sei-lst/src/StakedSei.sol": {
-      "lastModificationDate": 1741883014061,
-      "contentHash": "b7e01873fc2ce5847341f74093ba6178",
+      "lastModificationDate": 1742056510352,
+      "contentHash": "3d7eaa94ee5cc0c851e2fa0f4ef32aee",
       "sourceName": "src/StakedSei.sol",
       "solcConfig": {
         "version": "0.8.21",
@@ -458,6 +459,419 @@
       ],
       "artifacts": [
         "IERC20Metadata"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/access/extensions/AccessControlDefaultAdminRules.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "d765bf467430909a9687b336bb946d78",
+      "sourceName": "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IAccessControlDefaultAdminRules.sol",
+        "../AccessControl.sol",
+        "../../utils/math/SafeCast.sol",
+        "../../utils/math/Math.sol",
+        "../../interfaces/IERC5313.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "AccessControlDefaultAdminRules"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/access/AccessControl.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "4c80b7fdf559a9a348e832a57d072a0b",
+      "sourceName": "@openzeppelin/contracts/access/AccessControl.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IAccessControl.sol",
+        "../utils/Context.sol",
+        "../utils/introspection/ERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "AccessControl"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/interfaces/IERC5313.sol": {
+      "lastModificationDate": 1741278043709,
+      "contentHash": "102f441e8bc28c4fc48b349151273d01",
+      "sourceName": "@openzeppelin/contracts/interfaces/IERC5313.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IERC5313"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/utils/math/SafeCast.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "2adca1150f58fc6f3d1f0a0f22ee7cca",
+      "sourceName": "@openzeppelin/contracts/utils/math/SafeCast.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "SafeCast"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/utils/math/Math.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "2b2665ae9bdb1af440658741a77fe213",
+      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../Panic.sol",
+        "./SafeCast.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Math"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/access/extensions/IAccessControlDefaultAdminRules.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "b739b4d082b34dfa4e68a4531fdb60d8",
+      "sourceName": "@openzeppelin/contracts/access/extensions/IAccessControlDefaultAdminRules.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IAccessControl.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IAccessControlDefaultAdminRules"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/utils/introspection/ERC165.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "7c03c1e37c3dc24eafb76dc2b8a5c3a6",
+      "sourceName": "@openzeppelin/contracts/utils/introspection/ERC165.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "ERC165"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/access/IAccessControl.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "6f7fac9fa0df6004375e18b7ff7edf4e",
+      "sourceName": "@openzeppelin/contracts/access/IAccessControl.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IAccessControl"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/utils/introspection/IERC165.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "bf0119eb2a570f219729ff38b6cd1df8",
+      "sourceName": "@openzeppelin/contracts/utils/introspection/IERC165.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "IERC165"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/dependencies/@openzeppelin-contracts-5.2.0/utils/Panic.sol": {
+      "lastModificationDate": 1741278043741,
+      "contentHash": "2133dc13536b4a6a98131e431fac59e1",
+      "sourceName": "@openzeppelin/contracts/utils/Panic.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Panic"
+      ]
+    },
+    "/home/recyclebin/solidity/sei-lst/src/interfaces/precompiles/IAddr.sol": {
+      "lastModificationDate": 1742229958680,
+      "contentHash": "a57786f31207b32f2554b9c25756e81c",
+      "sourceName": "src/interfaces/precompiles/IAddr.sol",
+      "solcConfig": {
+        "version": "0.8.21",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IAddr"
       ]
     }
   }

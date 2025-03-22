@@ -2,6 +2,14 @@ const { expect } = require("chai");
 const { exec } = require("child_process");
 const hre = require("hardhat");
 const { loadFixture } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
+const { sign } = require("crypto");
+
+const IAddrAbi = [
+    "function associate(string memory v, string memory r, string memory s, string memory customMessage) external returns (string memory seiAddr, address evmAddr)",
+    "function associatePubKey(string memory pubKeyHex) external returns (string memory seiAddr, address evmAddr)",
+    "function getSeiAddr(address addr) external view returns (string memory response)",
+    "function getEvmAddr(string memory addr) external view returns (address response)"
+];
 
 describe("Liquid Staking Contract", function () {
     function getPrivateKey(accountName) {
@@ -63,56 +71,116 @@ describe("Liquid Staking Contract", function () {
         }
     }
 
-    async function LiquidStakingFixture() {
-        const [first] = await hre.ethers.getSigners();
+    let signers;
+    let provider;
+    let stakedSei;
+    let liquidStaking;
+    let addrContract;
 
-        let provider = new hre.ethers.JsonRpcProvider("http://localhost:8545");
-        const user = new hre.ethers.Wallet(await getAndVerifyPrivateKey("ta0"), provider);
-        const owner = new hre.ethers.Wallet(await getAndVerifyPrivateKey("ta1"), provider);
-        const temp = new hre.ethers.Wallet(await getAndVerifyPrivateKey("ta2"), provider);
+    beforeEach(async function () {
+        const PRECOMPILE_ADDRESS = "0x0000000000000000000000000000000000001004";
+        const RPC_URL = "http://localhost:8545";
 
-        console.log(`User Address: ${user.address}`);
-        console.log(`Owner Address: ${owner.address}`);
-        console.log(`Temporary Wallet Address: ${temp.address}`);
+        // Get signers
+        signers = await hre.ethers.getSigners();
+        const [owner, user, temp] = signers;
 
-        const stakedSei = await hre.ethers.deployContract("StakedSei", ["StakedSei", "SSEI"], { signer: temp });
+        // Load contract ABI
+        const artifact = await hre.artifacts.readArtifact("IAddr");
+        const addrIface = new hre.ethers.Interface(artifact.abi);
+
+        // Set up provider
+        const provider = new hre.ethers.JsonRpcProvider(RPC_URL);
+
+        // Initialize wallets
+        const admin = new hre.ethers.Wallet(await getAndVerifyPrivateKey("admin"), provider);
+        const randomWallet = hre.ethers.Wallet.createRandom(provider);
+        // Fund the random wallet
+        await admin.call({
+            to: randomWallet.address,
+            value: hre.ethers.parseEther("10"),
+        });
+
+        // Encode calldata for associatePubKey
+        const associateCalldata = addrIface.encodeFunctionData("associatePubKey", [randomWallet.signingKey.compressedPublicKey.slice(2)]);
+
+        // Call associatePubKey
+        const decodedResult = addrIface.decodeFunctionResult("associatePubKey", await provider.call({
+            to: PRECOMPILE_ADDRESS,
+            data: associateCalldata,
+        }));
+        console.log(`Return value of associatePubKey:`,  decodedResult);
+
+        console.log(`Both address are same: ${randomWallet.address == decodedResult[1]}`);
+
+        // try {
+        //     // Encode calldata for getSeiAddr
+        //     const getSeiAddrCalldata = addrIface.encodeFunctionData("getSeiAddr", [randomWallet.address]);
+        //     const seiAddress = await provider.call({
+        //         to: PRECOMPILE_ADDRESS,
+        //         data: getSeiAddrCalldata,
+        //     });
+        //     console.log(`Sei Address: ${seiAddress}`);
+        // } catch (error) {
+        //     console.error(`-------------- Error --------------`);
+        //     console.error(hre.ethers.toUtf8String(error.data));
+        //     console.error(error);
+        //     console.error(`-------------- Error Ends --------------`);
+        // }
+
+        const logBalance = async (wallet) => {
+            console.log(`Balance of the address: ${await provider.getBalance(wallet.address)}`);
+        };
+
+        const sendFunds = async (sender, recipients, amount) => {
+            for (const recipient of recipients) {
+                await sender.sendTransaction({
+                    to: recipient.address,
+                    value: hre.ethers.parseEther(amount),
+                });
+            }
+        };
+
+        await logBalance(admin);
+
+        // Send funds to owner, user, and temp
+        await sendFunds(admin, [owner, user, temp], "10");
+
+        // Deploy token contract
+        stakedSei = await hre.ethers.deployContract("StakedSei", ["StakedSei", "SSEI"], { signer: temp });
         await stakedSei.waitForDeployment();
 
-        console.log(`StakedSei Contract Deployed at: ${await stakedSei.getAddress()}`);
-
-        console.log(`Addres of default signer of hardhat: ${first.address}`)
-        console.log(`StakedSei Contract Owner: ${await stakedSei.owner()}`);
-
-        const liquidStaking = await hre.ethers.deployContract("LiquidStaking", [await stakedSei.getAddress(), owner.address], { signer: owner });
+        // Deploy staking contract
+        liquidStaking = await hre.ethers.deployContract("LiquidStaking", [await stakedSei.getAddress(), owner.address], { signer: owner });
         await liquidStaking.waitForDeployment();
 
-        console.log(`LiquidStaking Contract Deployed at: ${await liquidStaking.getAddress()}`);
-        console.log(`LiquidStaking Contract Owner: ${await liquidStaking.owner()}`);
-
-
-
-        // await liquidStaking.connect(owner).acceptOwnershipOfToken();
-        // console.log(`Ownership Transfer Accepted: LiquidStaking now owns StakedSei`);
-
-
-        return { stakedSei, liquidStaking, temp, owner, user, provider };
-    }
+    });
 
     it("User can deposit and get correct amount of LST", async function () {
-        const { stakedSei, liquidStaking, temp, owner, provider } = await loadFixture(LiquidStakingFixture);
+        
+        const [owner, user, temp] = signers;
 
-        let tx = await stakedSei.connect(temp).transferOwnership(await liquidStaking.getAddress());
+        const tempEvmAddr = await temp.getAddress();
+        console.log(`Address of temp signer: ${tempEvmAddr}`);
 
-        const trace = await provider.send("eth_getTransactionByHash", [tx.hash]);
-        console.log(trace)
-        // expect()
-        //     .to.emit(stakedSei, "OwnershipTransferStarted")
-        //     .withArgs(temp.address, await liquidStaking.getAddress());
+        const stakingContractAdress = await liquidStaking.getAddress();
 
-        console.log(`StakedSei Pending Owner: ${await stakedSei.pendingOwner()}`);
+        expect(await stakedSei.connect(temp).transferOwnership(stakingContractAdress))
+            .to.emit(stakedSei, "OwnershipTransferStarted")
+            .withArgs(temp.address, await liquidStaking.getAddress());
 
-        // create variable for amount 
-        let amount = hre.ethers.parseEther("5");
+        expect(await stakedSei.pendingOwner()).to.be.equal(stakingContractAdress);
+
+        // const trace = await provider.send("eth_getTransactionByHash", [tx.hash]);
+        // console.log(trace)
+        // // expect()
+        // //     .to.emit(stakedSei, "OwnershipTransferStarted")
+        // //     .withArgs(temp.address, await liquidStaking.getAddress());
+
+        // console.log(`StakedSei Pending Owner: ${await stakedSei.pendingOwner()}`);
+
+        // // create variable for amount 
+        // let amount = hre.ethers.parseEther("5");
 
         // check emitted event
         // deposit Sei in the liquid staking contract

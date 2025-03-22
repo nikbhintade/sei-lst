@@ -3,13 +3,15 @@ pragma solidity 0.8.21;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
+import {AccessControlDefaultAdminRules} from
+    "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 
 import {IDistr, DISTR_CONTRACT} from "src/interfaces/precompiles/IDistr.sol";
 import {IStaking, STAKING_CONTRACT} from "src/interfaces/precompiles/IStaking.sol";
 
 import {StakedSei} from "src/StakedSei.sol";
 
-contract LiquidStaking is Ownable2Step {
+contract LiquidStaking is AccessControlDefaultAdminRules {
     /**
      * functions for users:
      * - deposit: user can call this function to deposit tokens and get
@@ -21,12 +23,11 @@ contract LiquidStaking is Ownable2Step {
      * functions for delegation bot:
      * - delegate
      * - redelegate
-     *
      * - undelegate
      *
      * Access control functions:
-     * - setBot
-     * - removeBot
+     * - setBot {DONE DONE}
+     * - removeBot {DONE DONE}
      *
      * Important but not sure which category:
      * - exchangeRate
@@ -44,6 +45,8 @@ contract LiquidStaking is Ownable2Step {
     //////////////////////////////////////////////////////////////*/
     mapping(address => WithdrawRequest[]) private s_withdrawRequests;
     StakedSei immutable s_stakedSei;
+
+    bytes32 private constant DELEGATION_BOT = keccak256(abi.encodePacked("DELEGATION_BOT"));
 
     /*//////////////////////////////////////////////////////////////
                                CONSTANTS
@@ -70,7 +73,7 @@ contract LiquidStaking is Ownable2Step {
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    constructor(address token, address owner) Ownable(owner) {
+    constructor(address token, address owner) AccessControlDefaultAdminRules(uint48(3 days), owner) {
         s_stakedSei = StakedSei(token);
     }
 
@@ -127,12 +130,24 @@ contract LiquidStaking is Ownable2Step {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Allows contract to accept the ownership of LST contract.
-    function acceptOwnershipOfToken() public onlyOwner {
+    function acceptOwnershipOfToken() external {
         s_stakedSei.acceptOwnership();
     }
 
     /// @notice Allows contract to give ownership of LST to different address.
-    function transferOwnershipOfToken() public onlyOwner {}
+    function transferOwnershipOfToken(address newOwner) external {
+        s_stakedSei.transferOwnership(newOwner);
+    }
+
+    /// @notice Allow owner to set delegation bot
+    function setDelegationBot(address bot) external {
+        grantRole(DELEGATION_BOT, bot);
+    }
+
+    /// @notice Allow owner to remove the delegation bot
+    function removeDelegationBot(address bot) external {
+        revokeRole(DELEGATION_BOT, bot);
+    }
 
     /*//////////////////////////////////////////////////////////////
                              VIEW FUNCTIONS

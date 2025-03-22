@@ -1,5 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@nomicfoundation/hardhat-foundry");
+require("@nomicfoundation/hardhat-ethers");
+
 require("hardhat-tracer");
 
 /** @type import('hardhat/config').HardhatUserConfig */

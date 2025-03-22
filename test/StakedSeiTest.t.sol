@@ -17,7 +17,7 @@ contract StakedSeiTest is Test {
         string memory name = "StakedSei";
         string memory symbol = "SSEI";
 
-        s_stakedSei = new StakedSei(s_owner, name, symbol);
+        s_stakedSei = new StakedSei(name, symbol);
     }
 
     function testTokenNameSymbolAndOwner() public {
@@ -25,7 +25,7 @@ contract StakedSeiTest is Test {
         string memory name = "StakedSei";
         string memory symbol = "SSEI";
 
-        StakedSei stakedSei = new StakedSei(liquidStakingContract, name, symbol);
+        StakedSei stakedSei = new StakedSei(name, symbol);
 
         assertEq(stakedSei.name(), name);
         assertEq(stakedSei.symbol(), symbol);
