@@ -49,3 +49,11 @@ Check balance of the account using Sei (Cosmos) Address:
 ```
 
 Note that when we initialize local node with `initialize_local_chain.sh` script it regenerates all the accounts so if you're using privaate from previous session then there is a chance that the account is not one of 10 which got initial balance on local node. In short whenever you start the local node you have to update the private key of account that is being used for testing.
+
+Get validators list for any network
+
+```bash
+curl -X GET "http://localhost:26657/validators" | jq
+```
+
+Cosmos RPC port is 26657. `jq` is just for formatting the output of the requst if it is JSON

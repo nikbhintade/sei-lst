@@ -21,23 +21,19 @@ contract LiquidStaking is AccessControlDefaultAdminRules {
      * remove some tokens from delegated validators based on the strategy.  [DONE DONE]
      *
      * functions for delegation bot:
-     * - delegate
-     * - redelegate
-     * - undelegate
+     * - delegate {DONE DONE}
+     * - redelegate {DONE DONE}
+     * - undelegate {DONE DONE}
+     *
+     * - withdrawRewards {DONE DONE}
      *
      * Access control functions:
      * - setBot {DONE DONE}
      * - removeBot {DONE DONE}
      *
      * Important but not sure which category:
-     * - exchangeRate
+     * - exchangeRate {DONE DONE}
      *
-     */
-
-    /**
-     * - set StakedSei token address
-     * - set owner
-     * -
      */
 
     /*//////////////////////////////////////////////////////////////
@@ -46,19 +42,21 @@ contract LiquidStaking is AccessControlDefaultAdminRules {
     mapping(address => WithdrawRequest[]) private s_withdrawRequests;
     StakedSei immutable s_stakedSei;
 
-    bytes32 private constant DELEGATION_BOT = keccak256(abi.encodePacked("DELEGATION_BOT"));
-
     /*//////////////////////////////////////////////////////////////
                                CONSTANTS
     //////////////////////////////////////////////////////////////*/
     uint256 public constant UNBONDING_PERIOD = 21 days;
     uint256 public constant TIME_BUFFER = 2 hours;
+    uint256 private constant PRECISION = 1e18;
+
+    bytes32 public constant DELEGATION_BOT = keccak256(abi.encodePacked("DELEGATION_BOT"));
 
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
     //////////////////////////////////////////////////////////////*/
     error LiquidStaking__TransferFailed(bytes data);
     error LiquidStaking__UnbondingInProgress(uint256 timeRemaining);
+    error LiquidStaking__ArrayMismastch();
 
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
@@ -95,7 +93,7 @@ contract LiquidStaking is AccessControlDefaultAdminRules {
 
         // create request
         WithdrawRequest memory request =
-            WithdrawRequest({amount: amount / _getExchangeRate(), timestamp: block.timestamp});
+            WithdrawRequest({amount: (amount * PRECISION) / _getExchangeRate(), timestamp: block.timestamp});
 
         // push to array
         s_withdrawRequests[msg.sender].push(request);
@@ -150,6 +148,49 @@ contract LiquidStaking is AccessControlDefaultAdminRules {
     }
 
     /*//////////////////////////////////////////////////////////////
+                        UN/DELEGATION FUNCTIONS
+    //////////////////////////////////////////////////////////////*/
+    function delegate(string[] calldata validators, uint256[] calldata amounts) external onlyRole(DELEGATION_BOT) {
+        if (validators.length != amounts.length) {
+            revert LiquidStaking__ArrayMismastch();
+        }
+        uint256 len = validators.length;
+
+        for (uint256 i = 0; i < len; i++) {
+            STAKING_CONTRACT.delegate{value: amounts[i]}(validators[i]);
+        }
+    }
+
+    function redelegate(string[2][] calldata validators, uint256[] calldata amounts)
+        external
+        onlyRole(DELEGATION_BOT)
+    {
+        if (validators.length != amounts.length) {
+            revert LiquidStaking__ArrayMismastch();
+        }
+        uint256 len = validators.length;
+
+        for (uint256 i = 0; i < len; i++) {
+            STAKING_CONTRACT.redelegate(validators[i][0], validators[i][1], amounts[i]);
+        }
+    }
+
+    function undelegate(string[] calldata validators, uint256[] calldata amounts) external onlyRole(DELEGATION_BOT) {
+        if (validators.length != amounts.length) {
+            revert LiquidStaking__ArrayMismastch();
+        }
+        uint256 len = validators.length;
+
+        for (uint256 i = 0; i < len; i++) {
+            STAKING_CONTRACT.undelegate(validators[i], amounts[i]);
+        }
+    }
+
+    function withdrawRewards(string[] calldata validators) external onlyRole(DELEGATION_BOT) {
+        DISTR_CONTRACT.withdrawMultipleDelegationRewards(validators);
+    }
+
+    /*//////////////////////////////////////////////////////////////
                              VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
@@ -184,7 +225,7 @@ contract LiquidStaking is AccessControlDefaultAdminRules {
         if (totalSupply == 0) {
             return 1;
         } else {
-            exchangeRate = (_getTotalDelegatedAmount() * 1e18) / totalSupply;
+            exchangeRate = (_getTotalDelegatedAmount() * PRECISION) / totalSupply;
         }
     }
 }
